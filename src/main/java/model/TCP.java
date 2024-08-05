@@ -44,6 +44,7 @@ public class TCP extends Thread {
              if ((packet.getType().equals("exit"))){
                 JsonOperator.setProceedToSaveLoad((boolean)packet.getObject());
             }
+             if (packet.getType().equals("gameLoop"))
             socket.getOutputStream().flush();
             socket.close();
         } catch (IOException | ClassNotFoundException ignored) {
