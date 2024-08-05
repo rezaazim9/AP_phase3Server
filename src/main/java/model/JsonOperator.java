@@ -14,9 +14,11 @@ import static controller.constants.FilePaths.SAVE_FILES_FOLDER_PATH;
 import static controller.constants.UIMessageConstants.*;
 
 public abstract class JsonOperator {
-    private JsonOperator(){}
+    private JsonOperator() {
+    }
+
     private static boolean proceedToSaveLoad = true;
-    private static File saveFile=null;
+    private static File saveFile = null;
 
     public static void JsonInitiate() {
         Timer jsonTimer = new Timer(10, null);
@@ -25,7 +27,9 @@ public abstract class JsonOperator {
                 try {
                     saveState();
                     loadState();
-                } catch (IOException ex) {throw new UnsupportedOperationException("Failed to synchronize game instance with the save file");}
+                } catch (IOException ex) {
+                    throw new UnsupportedOperationException("Failed to synchronize game instance with the save file");
+                }
             } else jsonTimer.stop();
         });
         jsonTimer.setCoalesce(true);
@@ -39,32 +43,54 @@ public abstract class JsonOperator {
             builder.setPrettyPrinting();
             Gson gson = builder.create();
             String jsonWrite = gson.toJson(Profile.getCurrent(), Profile.class);
-            try(FileWriter writer = new FileWriter(getFilePath(Profile.getCurrent().getProfileId()))){writer.write(jsonWrite);
-            } catch (IOException e) {throw new UnsupportedOperationException("Failed to save game state");}
+            try (FileWriter writer = new FileWriter(getFilePath(Profile.getCurrent().getProfileId()))) {
+                writer.write(jsonWrite);
+            } catch (IOException e) {
+                throw new UnsupportedOperationException("Failed to save game state");
+            }
+        }
+    }
+
+    public static String findProfile(String id) throws IOException {
+        String hashId = String.valueOf(id.hashCode());
+        File saveFilesFolder = new File(SAVE_FILES_FOLDER_PATH.getValue());
+        if (saveFilesFolder.exists()) for (File file : Objects.requireNonNull(saveFilesFolder.listFiles()))
+            if (file.getName().equals(hashId + SAVE_FILE_EXTENSION.getValue())) {
+                saveFile = file;
+                break;
+            }
+        if (saveFile != null) {
+            Profile.setCurrent(new ObjectMapper().readValue(saveFile, Profile.class));
+            return new Gson().toJson(Profile.getCurrent());
+        } else {
+            Profile.setCurrent(new Profile(id));
+            saveFile = new File(getFilePath(Profile.getCurrent().getProfileId()));
+            return new Gson().toJson(Profile.getCurrent());
         }
     }
 
     public static boolean loadState(String id) throws IOException {
         boolean login;
-        String hashId= String.valueOf(id.hashCode());
-        if (saveFile==null){
-            File saveFilesFolder=new File(SAVE_FILES_FOLDER_PATH.getValue());
-            if (saveFilesFolder.exists()) for (File file: Objects.requireNonNull(saveFilesFolder.listFiles())) if (file.getName().equals(hashId+SAVE_FILE_EXTENSION.getValue())) {
-                saveFile=file;
-                break;
-            }
+        String hashId = String.valueOf(id.hashCode());
+        if (saveFile == null) {
+            File saveFilesFolder = new File(SAVE_FILES_FOLDER_PATH.getValue());
+            if (saveFilesFolder.exists()) for (File file : Objects.requireNonNull(saveFilesFolder.listFiles()))
+                if (file.getName().equals(hashId + SAVE_FILE_EXTENSION.getValue())) {
+                    saveFile = file;
+                    break;
+                }
         }
-        if (saveFile!=null) {
-            Profile.setCurrent(new ObjectMapper().readValue(saveFile,Profile.class));
-            login=true;
-        }
-        else {
+        if (saveFile != null) {
+            Profile.setCurrent(new ObjectMapper().readValue(saveFile, Profile.class));
+            login = true;
+        } else {
             Profile.setCurrent(new Profile(id));
-            saveFile=new File(getFilePath(Profile.getCurrent().getProfileId()));
-            login=false;
+            saveFile = new File(getFilePath(Profile.getCurrent().getProfileId()));
+            login = false;
         }
         return login;
     }
+
     public static void loadState() throws IOException {
         loadState(Profile.getCurrent().getProfileId());
     }

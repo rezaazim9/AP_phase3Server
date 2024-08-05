@@ -31,7 +31,7 @@ public class Profile {
     private List<String> acquiredSkillsNames = new CopyOnWriteArrayList<>();
     private List<String> randomAquiredSkillNames = new CopyOnWriteArrayList<>();
     private int totalXP = 800;
-    private int currentGameXP = 300;
+    private int currentGameXP = 1300;
     private int epsilonMeleeDamage = 10;
     private int epsilonRangedDamage = 5;
     private int epsilonCollisionDamage = 0;
