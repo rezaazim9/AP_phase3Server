@@ -14,11 +14,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static controller.UserInterfaceController.moveGeoShape;
-import static controller.UserInterfaceController.rotateGeoShape;
 import static controller.constants.DefaultMethods.cosTable;
 import static controller.constants.DefaultMethods.sinTable;
-import static model.Utils.*;
 
 public class GeoShapeModel extends Entity implements Collidable, Translatable, Movable {
     public static final List<GeoShapeModel> allShapeModelsList = new CopyOnWriteArrayList<>();
@@ -46,13 +43,6 @@ public class GeoShapeModel extends Entity implements Collidable, Translatable, M
     public void placeVertices(int n) {
         if (isCircular()) {
             CopyOnWriteArrayList<Point2D> newVertices = new CopyOnWriteArrayList<>();
-            float step = 360f / n;
-            for (int i = 0; i < n; i++) {
-                float angleModified = validateAngle(step * i);
-                Point2D vertex = new Point2D.Float((float) (getRadius() * cosTable[(int) angleModified]), (float) (getRadius() * sinTable[(int) angleModified]));
-                vertex = addUpPoints(vertex, getAnchorSave());
-                newVertices.add(vertex);
-            }
             setVerticesSave(newVertices);
         }
     }
@@ -63,33 +53,23 @@ public class GeoShapeModel extends Entity implements Collidable, Translatable, M
 
     public void setVerticesSave(List<Point2D> verticesSave) {
         this.vertices.clear();
-        this.vertices.addAll(deepCloneList(verticesSave));
         this.verticesSave.clear();
-        this.verticesSave.addAll(deepCloneList(verticesSave));
         createGeometry();
     }
 
     @Override
     public void moveShapeModel(Point2D newAnchor) {
-        for (int i = 0; i < verticesSave.size(); i++) getVertices().set(i, addUpPoints(verticesSave.get(i), relativeLocation(newAnchor, getAnchorSave())));
-        moveGeoShape(getModelId(), movement.getAnchor());
     }
 
     @Override
     public void rotateShapeModel(float currentRotation) {
         setTotalRotation(getTotalRotation() - currentRotation);
-        for (int i = 0; i < getVertices().size(); i++)
-            getVertices().set(i, addUpPoints(relativeLocation(getMovement().getAnchor(), getAnchorSave()),
-                    rotateAbout(verticesSave.get(i), getAnchorSave(), getTotalRotation())));
-        rotateGeoShape(getModelId(), currentRotation);
     }
 
     @Override
     public void createGeometry() {
         if (!verticesSave.isEmpty()) {
             Coordinate[] coordinates = new Coordinate[verticesSave.size() + 1];
-            for (int i = 0; i < getVertices().size(); i++) coordinates[i] = toCoordinate(getVertices().get(i));
-            coordinates[getVertices().size()] = toCoordinate(getVertices().get(0));
             geometry = new GeometryFactory().createLineString(coordinates);
         } else geometry = new GeometryFactory().createLineString(new Coordinate[0]);
     }
@@ -153,7 +133,6 @@ public class GeoShapeModel extends Entity implements Collidable, Translatable, M
 
     public Point2D getCenter() {
         Point2D sumPoint = new Point2D.Float(0, 0);
-        for (Point2D vertex : getVertices()) sumPoint = addUpPoints(sumPoint, vertex);
         return new Point2D.Float((float) sumPoint.getX() / getVertices().size(), (float) sumPoint.getY() / getVertices().size());
     }
 

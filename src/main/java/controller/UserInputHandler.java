@@ -1,8 +1,6 @@
 package controller;
 
 import model.Profile;
-import view.containers.MotionPanelView;
-import view.menu.PauseMenu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import static controller.UserInputHandler.InputAction.InputActionType.*;
 import static controller.UserInterfaceController.*;
 import static controller.constants.EntityConstants.SHOTS_PER_SECOND;
-import static view.containers.GlassFrame.getGlassFrame;
 
 public final class UserInputHandler {
     private static UserInputHandler INSTANCE;
@@ -55,10 +52,6 @@ public final class UserInputHandler {
         inputMap.put(KeyStroke.getKeyStroke(Profile.SKILL_KEYCODE, 0, true), SKILL);
         actionMap.put(SKILL, new InputAction(SKILL,true));
 
-        getGlassFrame().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {new InputAction(SHOOT).run();}
-        });
     }
 
     public static UserInputHandler getINSTANCE() {
@@ -118,13 +111,6 @@ public final class UserInputHandler {
         this.lastShootingTime = lastShootingTime;
     }
 
-    public void setupInputHandler(MotionPanelView motionPanelView) {
-        motionPanelView.setInputMap(JComponent.WHEN_FOCUSED, inputMap);
-        motionPanelView.setActionMap(actionMap);
-        motionPanelView.requestFocus();
-        moveUpInd=false;moveDownInd=false;moveLeftInd=false;moveRightInd=false;
-    }
-
     public long getShootTimeDiffCapture() {
         return shootTimeDiffCapture;
     }
@@ -142,9 +128,6 @@ public final class UserInputHandler {
             this.pressed = pressed;
         }
 
-        public InputAction(InputActionType inputActionType) {
-            this.inputActionType = inputActionType;
-        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -155,7 +138,7 @@ public final class UserInputHandler {
                     case MOVE_LEFT -> getINSTANCE().setMoveLeftInd(pressed);
                     case MOVE_RIGHT -> getINSTANCE().setMoveRightInd(pressed);
                     case SHOOT -> run();
-                    case PAUSE -> PauseMenu.getINSTANCE().togglePanel();
+                    case PAUSE -> System.out.println();
                     case SKILL -> fireSkill();
                 }
             }

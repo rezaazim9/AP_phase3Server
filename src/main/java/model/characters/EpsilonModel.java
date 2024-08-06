@@ -4,14 +4,11 @@ import controller.GameLoop;
 import controller.UserInputHandler;
 import controller.constants.AbilityConstants;
 import model.Profile;
-import model.WaveManager;
 import model.collision.Collidable;
 import model.entities.AttackTypes;
 import model.movement.Direction;
 import model.projectiles.LongRanged;
-import view.containers.MotionPanelView;
-import view.menu.MainMenu;
-import view.menu.PauseMenu;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,9 +20,8 @@ import static controller.UserInterfaceController.*;
 import static controller.constants.EntityConstants.EPSILON_HEALTH;
 import static controller.constants.EntityConstants.EPSILON_SHOOTING_RAPIDITY;
 import static controller.constants.EntityConstants.EntityVertices.EPSILON_VERTICES;
-import static controller.constants.EntityConstants.PointConstants.EPSILON_CENTER;
 import static controller.constants.MovementConstants.EPSILON_SPEED;
-import static model.Utils.*;
+
 
 public final class EpsilonModel extends GeoShapeModel implements LongRanged {
     private static EpsilonModel INSTANCE;
@@ -39,9 +35,6 @@ public final class EpsilonModel extends GeoShapeModel implements LongRanged {
         super(new Point(0, 0), EPSILON_VERTICES.getValue(), EPSILON_HEALTH.getValue());
         this.setCircular(true);
         setMotionPanelId(motionPanelId);
-        this.setAnchorSave(deepClone(EPSILON_CENTER.getValue()));
-        assert getAnchorSave() != null;
-        createEpsilon(getModelId(), roundPoint(getAnchorSave()), motionPanelId);
         Point2D anchor = getMotionPanelCenterLocation(getMainMotionPanelId());
         moveShapeModel(anchor);
         getMovement().setAnchor(anchor);
@@ -63,15 +56,11 @@ public final class EpsilonModel extends GeoShapeModel implements LongRanged {
     @Override
     public void eliminate() {
         super.eliminate();
-        Timer timer=new Timer((int) TimeUnit.NANOSECONDS.toMillis((long) showMessage(-1)), e -> {
+        Timer timer=new Timer((int) TimeUnit.NANOSECONDS.toMillis((long) showMessage()), e -> {
             GameLoop.setPR(0);
             Profile.getCurrent().setCurrentGameXP(0);
             exitGame();
-            Profile.getCurrent().setPaused(true);
-            PauseMenu.getINSTANCE().togglePanel(true);
-            MainMenu.flushINSTANCE();
-            MainMenu.getINSTANCE().togglePanel();
-            });
+          });
         timer.setRepeats(false);
         timer.start();
     }
@@ -81,7 +70,6 @@ public final class EpsilonModel extends GeoShapeModel implements LongRanged {
         getMovement().setAngularSpeed(0);
         getMovement().setSpeed(0);
         getMovement().setSpeedSave(0);
-        UserInputHandler.getINSTANCE().setupInputHandler(MotionPanelView.getMainMotionPanelView());
     }
     public void activateMovement() {
         getMovement().setAngularSpeed(0);
@@ -139,18 +127,13 @@ public final class EpsilonModel extends GeoShapeModel implements LongRanged {
             getMovement().move();
 
             Point mouseLocation = getMouseLocation();
-            Point relativeMouse = (Point) relativeLocation(mouseLocation, roundPoint(getMovement().getAnchor()));
-            float mouseAngle = calculateAngle(relativeMouse);
-
-            if (UserInputHandler.getINSTANCE().isShootInd()) {
-                shoot(this, new Direction(relativeMouse), getDamageSize().get(AttackTypes.RANGED));
+          if (UserInputHandler.getINSTANCE().isShootInd()) {
                 if (getDamageSize().get(AttackTypes.RANGED) == AbilityConstants.PHONOI_ABILITY_RANGED_DAMAGE.getValue()) {
                     getDamageSize().put(AttackTypes.RANGED, Profile.getCurrent().getEpsilonRangedDamage());
                 }
                 UserInputHandler.getINSTANCE().setShootInd(false);
             }
 
-            rotateShapeModel(getTotalRotation() - mouseAngle);
         });
     }
 

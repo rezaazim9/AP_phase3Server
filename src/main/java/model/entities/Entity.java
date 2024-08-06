@@ -2,7 +2,6 @@ package model.entities;
 
 import controller.GameLoop;
 import model.Profile;
-import model.WaveManager;
 import model.characters.CollectibleModel;
 import model.characters.EpsilonModel;
 import model.characters.GeoShapeModel;
@@ -39,10 +38,6 @@ public abstract class Entity {
                 entity.setHealth(entity.getHealth() - getDamageSize().get(attackType));
                 if (entity.getHealth() <= 0) {
                     entity.eliminate();
-                    WaveManager.waveEntities.remove(entity);
-                    if (!(entity instanceof CollectibleModel)) {
-                        WaveManager.killedEnemies++;
-                    }
                     if (entity instanceof CollectibleModel) playXPSoundEffect();
                     else playDownSoundEffect();
                 } else playHitSoundEffect();
@@ -62,7 +57,6 @@ public abstract class Entity {
             allShapeModelsList.remove(this);
             collidables.remove(geoShapeModel);
             Movable.movables.remove(geoShapeModel);
-            eliminateView(getModelId(), getMotionPanelId());
         }
     }
 

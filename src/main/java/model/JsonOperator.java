@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,23 +16,26 @@ public abstract class JsonOperator {
     private JsonOperator() {
     }
 
-    private static boolean proceedToSaveLoad = true;
-    private static File saveFile = null;
 
+    private static File saveFile = null;
     public static void JsonInitiate() {
-        Timer jsonTimer = new Timer(10, null);
-        jsonTimer.addActionListener(e -> {
-            if (proceedToSaveLoad) {
-                try {
-                    saveState();
-                    loadState();
-                } catch (IOException ex) {
-                    throw new UnsupportedOperationException("Failed to synchronize game instance with the save file");
-                }
-            } else jsonTimer.stop();
-        });
-        jsonTimer.setCoalesce(true);
-        jsonTimer.start();
+        try {
+            saveState();
+            loadState();
+        } catch (IOException ex) {
+            throw new UnsupportedOperationException("Failed to synchronize game instance with the save file");
+        }
+    }
+
+    public static boolean isProfileExist(String id) {
+        String hashId = String.valueOf(id.hashCode());
+        File saveFilesFolder = new File(SAVE_FILES_FOLDER_PATH.getValue());
+        if (saveFilesFolder.exists()) for (File file : Objects.requireNonNull(saveFilesFolder.listFiles()))
+            if (file.getName().equals(hashId + SAVE_FILE_EXTENSION.getValue())) {
+                saveFile = file;
+                return true;
+            }
+        return false;
     }
 
     public static void saveState() {
@@ -51,44 +53,24 @@ public abstract class JsonOperator {
         }
     }
 
-    public static String findProfile(String id) throws IOException {
-        String hashId = String.valueOf(id.hashCode());
-        File saveFilesFolder = new File(SAVE_FILES_FOLDER_PATH.getValue());
-        if (saveFilesFolder.exists()) for (File file : Objects.requireNonNull(saveFilesFolder.listFiles()))
-            if (file.getName().equals(hashId + SAVE_FILE_EXTENSION.getValue())) {
-                saveFile = file;
-                break;
-            }
-        if (saveFile != null) {
-            Profile.setCurrent(new ObjectMapper().readValue(saveFile, Profile.class));
-            return new Gson().toJson(Profile.getCurrent());
-        } else {
-            Profile.setCurrent(new Profile(id));
-            saveFile = new File(getFilePath(Profile.getCurrent().getProfileId()));
-            return new Gson().toJson(Profile.getCurrent());
-        }
-    }
-
-    public static boolean loadState(String id) throws IOException {
-        boolean login;
+    public static void loadState(String id) throws IOException {
+        boolean saveFileExists = false;
         String hashId = String.valueOf(id.hashCode());
         if (saveFile == null) {
             File saveFilesFolder = new File(SAVE_FILES_FOLDER_PATH.getValue());
             if (saveFilesFolder.exists()) for (File file : Objects.requireNonNull(saveFilesFolder.listFiles()))
                 if (file.getName().equals(hashId + SAVE_FILE_EXTENSION.getValue())) {
                     saveFile = file;
+                    saveFileExists = true;
                     break;
                 }
         }
-        if (saveFile != null) {
+        if (saveFileExists) {
             Profile.setCurrent(new ObjectMapper().readValue(saveFile, Profile.class));
-            login = true;
         } else {
             Profile.setCurrent(new Profile(id));
             saveFile = new File(getFilePath(Profile.getCurrent().getProfileId()));
-            login = false;
         }
-        return login;
     }
 
     public static void loadState() throws IOException {
@@ -97,10 +79,6 @@ public abstract class JsonOperator {
 
     public static String getFilePath(String fileName) {
         return SAVE_FILES_FOLDER_PATH.getValue() + fileName + SAVE_FILE_EXTENSION.getValue();
-    }
-
-    public static void setProceedToSaveLoad(boolean proceedToSaveLoad) {
-        JsonOperator.proceedToSaveLoad = proceedToSaveLoad;
     }
 }
 

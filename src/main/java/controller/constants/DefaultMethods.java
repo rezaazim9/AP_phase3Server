@@ -1,9 +1,6 @@
 package controller.constants;
 
 import controller.GameLoop;
-import view.characters.GeoShapeView;
-import view.characters.SquarantineView;
-import view.characters.TrigorathView;
 
 import javax.sound.sampled.Clip;
 import java.awt.*;
@@ -11,8 +8,6 @@ import java.awt.*;
 import static controller.AudioHandler.clips;
 import static controller.constants.FilePaths.SQUARANTINE_IMAGEPATH;
 import static controller.constants.FilePaths.TRIGORATH_IMAGEPATH;
-import static view.Utils.averageTone;
-import static view.characters.GeoShapeView.getRawImage;
 
 public class DefaultMethods {
     private DefaultMethods() {}
@@ -43,14 +38,6 @@ public class DefaultMethods {
             case COUNTDOWN -> 0.235f;
             default -> 0.172f;
         };
-    }
-
-    public static Color GET_AVERAGE_TONE_OF_CHARACTER(GeoShapeView geoShapeView) {
-        Color color;
-        if (geoShapeView.getClass().equals(SquarantineView.class)) color = averageTone(getRawImage(SQUARANTINE_IMAGEPATH.getValue()));
-        else if (geoShapeView.getClass().equals(TrigorathView.class)) color = averageTone(getRawImage(TRIGORATH_IMAGEPATH.getValue()));
-        else color = new Color(0, 0, 0, 0);
-        return color;
     }
 
     public static String ABILITY_ACTIVATE_MESSAGE(int cost) {
