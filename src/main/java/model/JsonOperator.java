@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static controller.constants.FilePaths.SAVE_FILES_FOLDER_PATH;
+import static controller.constants.FilePaths.STATS_FILES_FOLDER_PATH;
 import static controller.constants.UIMessageConstants.*;
 
 public abstract class JsonOperator {
@@ -25,6 +26,19 @@ public abstract class JsonOperator {
         } catch (IOException ex) {
             throw new UnsupportedOperationException("Failed to synchronize game instance with the save file");
         }
+    }
+
+    public static void saveStats(String stats) {
+        Stats stats1 = new Gson().fromJson(stats, Stats.class);
+       File saveFilesFolder = new File(STATS_FILES_FOLDER_PATH.getValue());
+        if (saveFilesFolder.exists()) {
+            try (FileWriter writer = new FileWriter(STATS_FILES_FOLDER_PATH.getValue() + stats1.getProfileId()+stats1.getTimeSurvived() +stats1.getXp()+ SAVE_FILE_EXTENSION.getValue())) {
+                writer.write(stats);
+            } catch (IOException e) {
+                throw new UnsupportedOperationException("Failed to save game state");
+            }
+        }
+
     }
 
     public static boolean isProfileExist(String id) {
@@ -45,7 +59,7 @@ public abstract class JsonOperator {
             builder.setPrettyPrinting();
             Gson gson = builder.create();
             String jsonWrite = gson.toJson(Profile.getCurrent(), Profile.class);
-            try (FileWriter writer = new FileWriter(getFilePath(Profile.getCurrent().getProfileId()))) {
+            try (FileWriter writer = new FileWriter(getFilePath(""+Profile.getCurrent().getProfileId().hashCode()))) {
                 writer.write(jsonWrite);
             } catch (IOException e) {
                 throw new UnsupportedOperationException("Failed to save game state");
@@ -69,7 +83,7 @@ public abstract class JsonOperator {
             Profile.setCurrent(new ObjectMapper().readValue(saveFile, Profile.class));
         } else {
             Profile.setCurrent(new Profile(id));
-            saveFile = new File(getFilePath(Profile.getCurrent().getProfileId()));
+            saveFile = new File(getFilePath(""+Profile.getCurrent().getProfileId().hashCode()));
         }
     }
 

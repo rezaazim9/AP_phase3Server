@@ -72,7 +72,7 @@ public class Profile {
     }
 
     public Profile(String profileId) {
-        this.profileId = String.valueOf(profileId.hashCode());
+        this.profileId = profileId;
     }
 
     public static Profile getCurrent() {
