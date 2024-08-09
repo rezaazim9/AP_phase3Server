@@ -2,9 +2,6 @@ package model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
-import model.entities.Skill;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static controller.constants.FilePaths.SAVE_FILES_FOLDER_PATH;
 import static controller.constants.FilePaths.STATS_FILES_FOLDER_PATH;
 import static controller.constants.UIConstants.MINIMUM_PROFILE_ID_LENGTH;
 import static controller.constants.UIMessageConstants.PROFILE_ID_REGEX;

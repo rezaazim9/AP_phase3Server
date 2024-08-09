@@ -19,6 +19,7 @@ public abstract class JsonOperator {
 
 
     private static File saveFile = null;
+
     public static void JsonInitiate() {
         try {
             saveState();
@@ -30,9 +31,9 @@ public abstract class JsonOperator {
 
     public static void saveStats(String stats) {
         Stats stats1 = new Gson().fromJson(stats, Stats.class);
-       File saveFilesFolder = new File(STATS_FILES_FOLDER_PATH.getValue());
+        File saveFilesFolder = new File(STATS_FILES_FOLDER_PATH.getValue());
         if (saveFilesFolder.exists()) {
-            try (FileWriter writer = new FileWriter(STATS_FILES_FOLDER_PATH.getValue() + stats1.getProfileId()+stats1.getTimeSurvived() +stats1.getXp()+ SAVE_FILE_EXTENSION.getValue())) {
+            try (FileWriter writer = new FileWriter(STATS_FILES_FOLDER_PATH.getValue() + stats1.getProfileId() + stats1.getTimeSurvived() + stats1.getXp() + SAVE_FILE_EXTENSION.getValue())) {
                 writer.write(stats);
             } catch (IOException e) {
                 throw new UnsupportedOperationException("Failed to save game state");
@@ -59,7 +60,7 @@ public abstract class JsonOperator {
             builder.setPrettyPrinting();
             Gson gson = builder.create();
             String jsonWrite = gson.toJson(Profile.getCurrent(), Profile.class);
-            try (FileWriter writer = new FileWriter(getFilePath(""+Profile.getCurrent().getProfileId().hashCode()))) {
+            try (FileWriter writer = new FileWriter(getFilePath("" + Profile.getCurrent().getProfileId().hashCode()))) {
                 writer.write(jsonWrite);
             } catch (IOException e) {
                 throw new UnsupportedOperationException("Failed to save game state");
@@ -68,22 +69,12 @@ public abstract class JsonOperator {
     }
 
     public static void loadState(String id) throws IOException {
-        boolean saveFileExists = false;
-        String hashId = String.valueOf(id.hashCode());
-        if (saveFile == null) {
-            File saveFilesFolder = new File(SAVE_FILES_FOLDER_PATH.getValue());
-            if (saveFilesFolder.exists()) for (File file : Objects.requireNonNull(saveFilesFolder.listFiles()))
-                if (file.getName().equals(hashId + SAVE_FILE_EXTENSION.getValue())) {
-                    saveFile = file;
-                    saveFileExists = true;
-                    break;
-                }
-        }
-        if (saveFileExists) {
+        if (isProfileExist(id)) {
             Profile.setCurrent(new ObjectMapper().readValue(saveFile, Profile.class));
         } else {
+            System.out.println("Creating new profile");
             Profile.setCurrent(new Profile(id));
-            saveFile = new File(getFilePath(""+Profile.getCurrent().getProfileId().hashCode()));
+            saveFile = new File(getFilePath("" + Profile.getCurrent().getProfileId().hashCode()));
         }
     }
 

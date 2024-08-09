@@ -2,7 +2,6 @@ package model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import model.entities.Skill;
 
 
 import java.awt.event.KeyEvent;
@@ -12,15 +11,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
 public class Profile {
     private static Profile current = new Profile("");
-    public static final int UP_KEYCODE = KeyEvent.VK_W;
-    public static final int DOWN_KEYCODE = KeyEvent.VK_S;
-    public static final int LEFT_KEYCODE = KeyEvent.VK_A;
-    public static final int RIGHT_KEYCODE = KeyEvent.VK_D;
-    public static final int SKILL_KEYCODE = KeyEvent.VK_SPACE;
-    public static final int PAUSE_KEYCODE = KeyEvent.VK_ESCAPE;
     private String profileId;
     private int ups = 800;
-    private int wave=0;
+    private int wave = 0;
     private int fps = 80;
     private float soundScale = 6;
     private float sizeScale = 0.75f;
@@ -40,9 +33,9 @@ public class Profile {
     private boolean isInCooldown = false;
 
     @JsonCreator
-    public Profile(@JsonProperty("profileId") String profileId,@JsonProperty("wave")int wave, @JsonProperty("ups") int ups,
+    public Profile(@JsonProperty("profileId") String profileId, @JsonProperty("wave") int wave, @JsonProperty("ups") int ups,
                    @JsonProperty("fps") int fps, @JsonProperty("soundScale") float soundScale,
-                   @JsonProperty("sizeScale") float sizeScale, @JsonProperty("gameSpeed") float gameSpeed, 
+                   @JsonProperty("sizeScale") float sizeScale, @JsonProperty("gameSpeed") float gameSpeed,
                    @JsonProperty("epsilonShootingRapidity") int epsilonShootingRapidity, @JsonProperty("activeSkillSaveName") String activeSkillSaveName,
                    @JsonProperty("acquiredSkillsNames") List<String> acquiredSkillsNames, @JsonProperty("randomAquiredSkillNames") List<String> randomAquiredSkillNames,
                    @JsonProperty("totalXP") int totalXP, @JsonProperty("currentGameXP") int currentGameXP, @JsonProperty("epsilonMeleeDamage") int epsilonMeleeDamage,
@@ -50,13 +43,13 @@ public class Profile {
                    @JsonProperty("epsilonMeleeDamageProbability") float epsilonMeleeDamageProbability, @JsonProperty("epsilonHealingAmount") int epsilonHealingAmount,
                    @JsonProperty("isPaused") boolean isPaused, @JsonProperty("isInCooldown") boolean isInCooldown) {
         this.profileId = profileId;
-        this. epsilonHealingAmount=epsilonHealingAmount;
-        this.epsilonMeleeDamageProbability=epsilonMeleeDamageProbability;
+        this.epsilonHealingAmount = epsilonHealingAmount;
+        this.epsilonMeleeDamageProbability = epsilonMeleeDamageProbability;
         this.ups = ups;
         this.fps = fps;
         this.epsilonMeleeDamage = epsilonMeleeDamage;
         this.epsilonRangedDamage = epsilonRangedDamage;
-        this.epsilonCollisionDamage=epsilonCollisionDamage;
+        this.epsilonCollisionDamage = epsilonCollisionDamage;
         this.soundScale = soundScale;
         this.sizeScale = sizeScale;
         this.gameSpeed = gameSpeed;
@@ -65,7 +58,7 @@ public class Profile {
         this.acquiredSkillsNames = acquiredSkillsNames;
         this.randomAquiredSkillNames = randomAquiredSkillNames;
         this.totalXP = totalXP;
-        this.wave=wave;
+        this.wave = wave;
         this.currentGameXP = currentGameXP;
         this.isPaused = isPaused;
         this.isInCooldown = isInCooldown;
@@ -208,7 +201,7 @@ public class Profile {
 
     public int getCurrentGameXP() {
         if (currentGameXP == 0) {
-           currentGameXP=300;
+            currentGameXP = 300;
         }
         return currentGameXP;
     }
